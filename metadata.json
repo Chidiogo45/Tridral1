@@ -1,0 +1,6 @@
+{
+  "name": "Tridral — Real-Time Transaction Graph AI Detection",
+  "description": "Real-time AI fraud and transaction-anomaly detection for fintechs, digital banks, and payment processors using transaction-graph modeling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
