@@ -8,6 +8,7 @@ export type PageId =
   | 'pricing'
   | 'about'
   | 'quote'
+  | 'contact'
   | 'compliance'
   | 'integrations'
   | 'case-for-graph'
@@ -54,4 +55,10 @@ export interface PilotQuoteForm {
   primaryRequirement: string;
   deploymentTimeline: string;
   environmentDetails: string;
+}
+
+export interface ContactApiResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
 }

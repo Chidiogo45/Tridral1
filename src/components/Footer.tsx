@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageId } from '../types.ts';
 import { Logo } from './Logo.tsx';
-import { ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, ShieldCheck, Mail } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (page: PageId) => void;
@@ -23,7 +23,20 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
               Real-time AI transaction-graph modeling for digital banks, fintechs, and payment processors. Stopping coordinated fraud before funds settle.
             </p>
-            <div className="pt-2 flex items-center gap-3 text-xs text-slate-400">
+
+            {/* Professional Contact Email */}
+            <div className="pt-1">
+              <a
+                href="mailto:info@tridral.com"
+                className="inline-flex items-center gap-2 text-sm text-[#2DD4BF] hover:text-[#5eead4] font-medium transition-colors"
+                title="Send email to info@tridral.com"
+              >
+                <Mail className="w-4 h-4 text-[#2DD4BF]" />
+                <span>info@tridral.com</span>
+              </a>
+            </div>
+
+            <div className="pt-1 flex flex-wrap items-center gap-3 text-xs text-slate-400">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-slate-800/80 border border-slate-700/60 text-slate-300">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#2DD4BF]" />
                 SOC 2 Type II Aligned
@@ -131,7 +144,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           {/* Governance & Company */}
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">
-              Governance & Access
+              Governance & Contact
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
@@ -159,11 +172,20 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 </button>
               </li>
               <li>
+                <a
+                  href="mailto:info@tridral.com"
+                  className="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <Mail className="w-3.5 h-3.5 text-[#2DD4BF]" />
+                  <span>info@tridral.com</span>
+                </a>
+              </li>
+              <li>
                 <button
                   onClick={() => onNavigate('quote')}
                   className="inline-flex items-center gap-1 text-[#2DD4BF] font-medium hover:text-[#5eead4] transition-colors cursor-pointer"
                 >
-                  <span>Request Pilot</span>
+                  <span>Contact / Request Pilot</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </button>
               </li>
@@ -176,6 +198,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             © {new Date().getFullYear()} Tridral Systems Inc. All rights reserved.
           </div>
           <div className="flex items-center gap-6">
+            <a
+              href="mailto:info@tridral.com"
+              className="text-[#2DD4BF] hover:underline transition-colors flex items-center gap-1"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>info@tridral.com</span>
+            </a>
             <button
               onClick={() => onNavigate('trust-center')}
               className="hover:text-slate-200 transition-colors cursor-pointer"

@@ -32,6 +32,7 @@ export default function App() {
       'pricing',
       'about',
       'quote',
+      'contact',
       'compliance',
       'integrations',
       'case-for-graph',
@@ -81,6 +82,7 @@ export default function App() {
       case 'about':
         return <AboutPage onNavigate={handleNavigate} />;
       case 'quote':
+      case 'contact':
         return <QuotePage onNavigate={handleNavigate} />;
       case 'compliance':
         return <CompliancePage onNavigate={handleNavigate} />;
