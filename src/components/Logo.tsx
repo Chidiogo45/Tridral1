@@ -4,17 +4,22 @@ interface LogoProps {
   className?: string;
   size?: number;
   showWordmark?: boolean;
+  variant?: 'light' | 'dark';
   wordmarkClass?: string;
 }
 
 export const Logo: React.FC<LogoProps> = ({
   className = '',
-  size = 28,
+  size = 32,
   showWordmark = true,
-  wordmarkClass = 'text-xl font-bold tracking-tight text-[#0B0F1A]',
+  variant = 'light',
+  wordmarkClass,
 }) => {
+  const defaultWordmarkColor =
+    variant === 'dark' ? 'text-white' : 'text-[var(--ink)]';
+
   return (
-    <div className={`flex items-center gap-2.5 ${className}`}>
+    <span className={`inline-flex items-center gap-2.5 shrink-0 ${className}`}>
       <svg
         width={size}
         height={size}
@@ -24,24 +29,38 @@ export const Logo: React.FC<LogoProps> = ({
         className="shrink-0"
         aria-hidden="true"
       >
-        <rect width="32" height="32" rx="8" fill="#0B0F1A" />
+        <rect width="32" height="32" rx="9" fill="#1A56F0" />
+        <path d="M9 6.5H18.5L23.5 11.5V25.5H9V6.5Z" fill="#FFFFFF" />
+        <path d="M18.5 6.5V11.5H23.5L18.5 6.5Z" fill="#CFE0FF" />
         <path
-          d="M16 8L24 22H8L16 8Z"
+          d="M12 14H20"
           stroke="#2DD4BF"
-          strokeWidth="1.75"
+          strokeWidth="2"
           strokeLinecap="round"
-          strokeLinejoin="round"
         />
-        <circle cx="16" cy="8" r="3.25" fill="#2F5FFF" stroke="#FFFFFF" strokeWidth="1.5" />
-        <circle cx="24" cy="22" r="3.25" fill="#2F5FFF" stroke="#FFFFFF" strokeWidth="1.5" />
-        <circle cx="8" cy="22" r="3.25" fill="#2DD4BF" stroke="#FFFFFF" strokeWidth="1.5" />
-        <circle cx="16" cy="17" r="1.5" fill="#FFFFFF" />
+        <path
+          d="M12 18H19"
+          stroke="#0B1020"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M12 22H17"
+          stroke="#4A5368"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
       </svg>
       {showWordmark && (
-        <span className={wordmarkClass}>
+        <span
+          className={
+            wordmarkClass ??
+            `display-heading text-xl font-extrabold tracking-tight ${defaultWordmarkColor}`
+          }
+        >
           Tridral
         </span>
       )}
-    </div>
+    </span>
   );
 };

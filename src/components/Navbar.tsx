@@ -1,26 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PageId } from '../types.ts';
+import { PAGE_PATHS } from '../routes.ts';
 import { Logo } from './Logo.tsx';
-import { Menu, X, ArrowRight, ShieldCheck, Cpu, Layers, GitGraph, FileText, Activity } from 'lucide-react';
+import { ArrowRightIcon, ChevronDownIcon, CloseIcon, MenuIcon } from './Icons.tsx';
 
 interface NavbarProps {
   currentPage: PageId;
-  onNavigate: (page: PageId) => void;
+  onNavigate: (page: PageId, options?: { walkthrough?: boolean }) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 12);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -32,194 +25,245 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
     };
   }, [mobileMenuOpen]);
 
-  const navItems: { id: PageId; label: string }[] = [
-    { id: 'platform', label: 'Platform' },
-    { id: 'how-it-works', label: 'How It Works' },
-    { id: 'architecture', label: 'Architecture' },
-    { id: 'capabilities', label: 'Capabilities' },
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(event.target as Node)) {
+        setMoreOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMoreOpen(false);
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  const primaryNav: { id: PageId; label: string }[] = [
+    { id: 'product', label: 'Product' },
+    { id: 'sample-report', label: 'Sample report' },
+    { id: 'why-it-matters', label: 'Why it matters' },
     { id: 'pricing', label: 'Pricing' },
+    { id: 'about', label: 'About' },
   ];
 
-  const handleNavClick = (page: PageId) => {
+  const moreNav: { id: PageId; label: string }[] = [
+    { id: 'roadmap', label: 'Roadmap' },
+    { id: 'faq', label: 'FAQ' },
+    { id: 'trust-center', label: 'Trust Center' },
+  ];
+
+  const isMoreActive = moreNav.some((item) => item.id === currentPage);
+
+  const handleNav = (page: PageId, e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     onNavigate(page);
+    setMoreOpen(false);
     setMobileMenuOpen(false);
   };
 
   return (
-    <header
-      className={`sticky top-0 z-50 w-full transition-all duration-200 ${
-        scrolled
-          ? 'bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs'
-          : 'bg-white/70 backdrop-blur-sm border-b border-slate-200/40'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-8">
-          {/* Zone 1: Single element brand wordmark */}
-          <button
-            onClick={() => handleNavClick('home')}
-            className="flex items-center focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#2F5FFF] rounded-sm py-1"
+    <header className="fixed top-4 inset-x-0 z-50 px-4 sm:px-6 pointer-events-none">
+      <div className="max-w-[1200px] mx-auto pointer-events-auto">
+        <div
+          className="flex items-center justify-between gap-4 lg:gap-6 px-4 sm:px-5 h-16 rounded-full bg-white/92 backdrop-blur-md border border-[#E2E8F8]"
+          style={{ boxShadow: 'var(--shadow-card)' }}
+        >
+          {/* Brand */}
+          <a
+            href={PAGE_PATHS.home}
+            onClick={(e) => handleNav('home', e)}
+            className="flex items-center focus-ring rounded-full py-1 px-1 cursor-pointer shrink-0"
             aria-label="Tridral Home"
           >
-            <Logo size={28} />
-          </button>
+            <Logo size={30} />
+          </a>
 
-          {/* Zone 2: 4-5 concise single-line nav links */}
-          <nav className="hidden md:flex items-center gap-7" aria-label="Main navigation">
-            {navItems.map((item) => {
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-1" aria-label="Primary navigation">
+            {primaryNav.map((item) => {
               const isActive = currentPage === item.id;
               return (
-                <button
+                <a
                   key={item.id}
-                  onClick={() => handleNavClick(item.id)}
-                  className={`relative text-sm font-medium whitespace-nowrap shrink-0 transition-colors py-1 cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#2F5FFF] rounded-xs ${
+                  href={PAGE_PATHS[item.id]}
+                  onClick={(e) => handleNav(item.id, e)}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`px-3 py-2 rounded-full text-[14px] font-medium whitespace-nowrap shrink-0 transition-colors duration-200 cursor-pointer focus-ring ${
                     isActive
-                      ? 'text-[#2F5FFF] font-semibold'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-[var(--blue-soft)] text-[var(--blue)] font-semibold'
+                      : 'text-[var(--text)] hover:text-[var(--ink)] hover:bg-[#F4F6FF]'
                   }`}
                 >
                   {item.label}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2F5FFF] rounded-full" />
-                  )}
-                </button>
+                </a>
               );
             })}
+
+            <div className="relative" ref={moreRef}>
+              <button
+                type="button"
+                onClick={() => setMoreOpen((prev) => !prev)}
+                aria-expanded={moreOpen}
+                aria-haspopup="menu"
+                className={`inline-flex items-center gap-1 px-3 py-2 rounded-full text-[14px] font-medium whitespace-nowrap shrink-0 transition-colors duration-200 cursor-pointer focus-ring ${
+                  isMoreActive || moreOpen
+                    ? 'bg-[var(--blue-soft)] text-[var(--blue)] font-semibold'
+                    : 'text-[var(--text)] hover:text-[var(--ink)] hover:bg-[#F4F6FF]'
+                }`}
+              >
+                <span>More</span>
+                <ChevronDownIcon
+                  className={`w-4 h-4 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {moreOpen && (
+                <div
+                  role="menu"
+                  aria-label="More pages"
+                  className="absolute left-0 mt-3 w-48 rounded-2xl bg-white border border-[#E2E8F8] p-2 z-50"
+                  style={{ boxShadow: 'var(--shadow-card)' }}
+                >
+                  {moreNav.map((item) => {
+                    const active = currentPage === item.id;
+                    return (
+                      <a
+                        key={item.id}
+                        role="menuitem"
+                        href={PAGE_PATHS[item.id]}
+                        onClick={(e) => handleNav(item.id, e)}
+                        aria-current={active ? 'page' : undefined}
+                        className={`block w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors focus-ring ${
+                          active
+                            ? 'bg-[var(--blue-soft)] text-[var(--blue)] font-semibold'
+                            : 'text-[var(--ink)] hover:bg-[#F4F6FF]'
+                        }`}
+                      >
+                        {item.label}
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </nav>
 
-          {/* Zone 3: 1 primary action */}
-          <div className="hidden md:flex items-center gap-3 shrink-0">
-            <button
-              onClick={() => handleNavClick('quote')}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#2F5FFF] hover:bg-[#254ecc] active:bg-[#1e3fa8] rounded-lg transition-colors cursor-pointer shadow-xs focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#2F5FFF] focus-visible:ring-offset-2 whitespace-nowrap shrink-0"
+          {/* Primary Action */}
+          <div className="hidden lg:flex items-center shrink-0">
+            <a
+              href={PAGE_PATHS['early-access']}
+              onClick={(e) => handleNav('early-access', e)}
+              className="group inline-flex items-center justify-center gap-2 h-11 px-5 text-sm font-semibold text-white bg-[var(--blue)] hover:bg-[#1447D4] rounded-full transition-colors duration-200 cursor-pointer focus-ring whitespace-nowrap shrink-0"
             >
-              <span>Request Pilot</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+              <span>Join early access</span>
+              <ArrowRightIcon className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+            </a>
           </div>
 
-          {/* Mobile hamburger button */}
-          <div className="flex md:hidden items-center gap-2">
-            <button
-              onClick={() => handleNavClick('quote')}
-              className="px-3 py-1.5 text-xs font-semibold text-white bg-[#2F5FFF] rounded-md"
+          {/* Mobile Controls */}
+          <div className="flex lg:hidden items-center gap-2 shrink-0">
+            <a
+              href={PAGE_PATHS['early-access']}
+              onClick={(e) => handleNav('early-access', e)}
+              className="inline-flex items-center h-9 px-3.5 text-xs font-semibold text-white bg-[var(--blue)] hover:bg-[#1447D4] rounded-full transition-colors whitespace-nowrap shrink-0 focus-ring"
             >
-              Pilot
-            </button>
+              Join early access
+            </a>
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-700 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#2F5FFF]"
+              type="button"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className="w-10 h-10 inline-flex items-center justify-center text-[var(--ink)] hover:bg-[var(--blue-soft)] rounded-full transition-colors focus-ring cursor-pointer"
               aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <CloseIcon className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Drawer Overlay */}
-      {mobileMenuOpen && (
+      {/* Mobile Sheet */}
+      <div
+        className={`lg:hidden fixed inset-0 top-[88px] z-40 px-4 transition-all duration-250 ease-out ${
+          mobileMenuOpen
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
+        }`}
+        aria-hidden={!mobileMenuOpen}
+      >
         <div
-          className="fixed inset-0 top-16 bg-slate-900/40 backdrop-blur-xs z-40 md:hidden animate-fade-in"
+          className="fixed inset-0 top-[88px] bg-[#0B1020]/30 backdrop-blur-xs"
           onClick={() => setMobileMenuOpen(false)}
+        />
+
+        <div
+          className={`relative max-w-[1200px] mx-auto bg-white rounded-[28px] border border-[#E2E8F8] p-6 max-h-[calc(100vh-112px)] overflow-y-auto transition-transform duration-250 ease-out ${
+            mobileMenuOpen ? 'translate-y-0' : '-translate-y-3'
+          }`}
+          style={{ boxShadow: 'var(--shadow-card)' }}
         >
-          <div
-            className="w-full bg-white border-b border-slate-200 shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="space-y-1 mb-6">
-              <div className="text-xs font-semibold tracking-wider text-slate-600 uppercase px-3 py-2">
-                Core Platform
-              </div>
-              {navItems.map((item) => (
-                <button
+          <div className="space-y-1.5">
+            {primaryNav.map((item) => {
+              const isActive = currentPage === item.id;
+              return (
+                <a
                   key={item.id}
-                  onClick={() => handleNavClick(item.id)}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg text-base font-medium transition-colors flex items-center justify-between ${
-                    currentPage === item.id
-                      ? 'bg-blue-50 text-[#2F5FFF] font-semibold'
-                      : 'text-slate-700 hover:bg-slate-50'
+                  href={PAGE_PATHS[item.id]}
+                  onClick={(e) => handleNav(item.id, e)}
+                  className={`w-full text-left px-4 py-3 rounded-2xl text-base font-medium flex items-center justify-between transition-colors focus-ring ${
+                    isActive
+                      ? 'bg-[var(--blue-soft)] text-[var(--blue)] font-semibold'
+                      : 'text-[var(--ink)] hover:bg-[#F4F6FF]'
                   }`}
                 >
                   <span>{item.label}</span>
-                  {currentPage === item.id && <div className="w-1.5 h-1.5 rounded-full bg-[#2F5FFF]" />}
-                </button>
-              ))}
-            </div>
+                </a>
+              );
+            })}
+          </div>
 
-            <div className="space-y-1 pt-4 border-t border-slate-100 mb-6">
-              <div className="text-xs font-semibold tracking-wider text-slate-600 uppercase px-3 py-2">
-                Deep Dive & Assurance
-              </div>
-              <button
-                onClick={() => handleNavClick('case-for-graph')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2.5 ${
-                  currentPage === 'case-for-graph' ? 'text-[#2F5FFF] font-semibold' : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <GitGraph className="w-4 h-4 text-slate-400" />
-                <span>The Case for Graph Detection</span>
-              </button>
-              <button
-                onClick={() => handleNavClick('compliance')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2.5 ${
-                  currentPage === 'compliance' ? 'text-[#2F5FFF] font-semibold' : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <ShieldCheck className="w-4 h-4 text-slate-400" />
-                <span>Compliance & AML/CFT</span>
-              </button>
-              <button
-                onClick={() => handleNavClick('integrations')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2.5 ${
-                  currentPage === 'integrations' ? 'text-[#2F5FFF] font-semibold' : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <Cpu className="w-4 h-4 text-slate-400" />
-                <span>Integrations & API</span>
-              </button>
-              <button
-                onClick={() => handleNavClick('roadmap')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2.5 ${
-                  currentPage === 'roadmap' ? 'text-[#2F5FFF] font-semibold' : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <Layers className="w-4 h-4 text-slate-400" />
-                <span>Product Roadmap</span>
-              </button>
-              <button
-                onClick={() => handleNavClick('trust-center')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2.5 ${
-                  currentPage === 'trust-center' ? 'text-[#2F5FFF] font-semibold' : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <FileText className="w-4 h-4 text-slate-400" />
-                <span>Trust Center & Security</span>
-              </button>
-              <button
-                onClick={() => handleNavClick('status')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2.5 ${
-                  currentPage === 'status' ? 'text-[#2F5FFF] font-semibold' : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <Activity className="w-4 h-4 text-slate-400" />
-                <span>System Status</span>
-              </button>
+          <div className="mt-5 pt-4 border-t border-[#E8ECF8] space-y-1">
+            <div className="px-4 py-1 text-xs font-semibold text-[var(--muted)]">
+              More
             </div>
+            {moreNav.map((item) => {
+              const isActive = currentPage === item.id;
+              return (
+                <a
+                  key={item.id}
+                  href={PAGE_PATHS[item.id]}
+                  onClick={(e) => handleNav(item.id, e)}
+                  className={`block w-full text-left px-4 py-2.5 rounded-2xl text-sm transition-colors focus-ring ${
+                    isActive
+                      ? 'text-[var(--blue)] font-semibold bg-[var(--blue-soft)]'
+                      : 'text-[var(--text)] hover:bg-[#F4F6FF] hover:text-[var(--ink)]'
+                  }`}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
+          </div>
 
-            <div className="pt-2">
-              <button
-                onClick={() => handleNavClick('quote')}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-[#2F5FFF] hover:bg-[#254ecc] rounded-lg transition-colors shadow-xs"
-              >
-                <span>Request Pilot Onboarding</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
+          <div className="mt-6">
+            <a
+              href={PAGE_PATHS['early-access']}
+              onClick={(e) => handleNav('early-access', e)}
+              className="group w-full h-12 inline-flex items-center justify-center gap-2 px-6 text-sm font-semibold text-white bg-[var(--blue)] hover:bg-[#1447D4] rounded-full transition-colors focus-ring"
+            >
+              <span>Join early access</span>
+              <ArrowRightIcon className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+            </a>
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 };

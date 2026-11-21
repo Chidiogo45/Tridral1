@@ -1,64 +1,38 @@
 export type PageId =
   | 'home'
-  | 'platform'
-  | 'how-it-works'
-  | 'architecture'
-  | 'capabilities'
-  | 'roadmap'
+  | 'product'
+  | 'sample-report'
+  | 'why-it-matters'
   | 'pricing'
+  | 'roadmap'
   | 'about'
-  | 'quote'
-  | 'contact'
-  | 'compliance'
-  | 'integrations'
-  | 'case-for-graph'
+  | 'faq'
   | 'trust-center'
-  | 'status';
+  | 'early-access';
 
-export interface FraudScenario {
+export type ComplianceStatus = 'Addressed' | 'Partial' | 'Missing';
+
+export interface SampleRequirementRow {
   id: string;
-  name: string;
-  category: string;
-  riskScore: number; // 0 to 100
-  riskLevel: 'High Risk' | 'Medium Risk' | 'Low Risk' | 'Normal';
-  action: 'Hold for Review' | 'Block Immediately' | 'Allow with Monitor' | 'Standard Allow';
-  summary: string;
-  detectionTime: string;
-  nodes: GraphNode[];
-  edges: GraphEdge[];
-  attributes: { label: string; value: string }[];
-  explanation: string;
+  requirement: string;
+  type: 'Deliverable' | 'Format' | 'Form' | 'Evaluation' | 'Technical';
+  mandatory: 'Yes' | 'No';
+  rfpPage: string;
+  status: ComplianceStatus;
+  reference: string;
+  evidenceDetail?: string;
 }
 
-export interface GraphNode {
-  id: string;
-  label: string;
-  type: 'account' | 'device' | 'ip' | 'card' | 'mule';
-  x: number;
-  y: number;
-  status: 'flagged' | 'linked' | 'normal';
-}
+export type RfpType = 'Federal' | 'State' | 'Local';
+export type InterestOption = 'Early access' | 'A walkthrough call' | 'Both';
 
-export interface GraphEdge {
-  from: string;
-  to: string;
-  amount?: string;
-  velocity?: string;
-  flagged?: boolean;
-}
-
-export interface PilotQuoteForm {
+export interface EarlyAccessFormData {
   fullName: string;
   workEmail: string;
   companyName: string;
-  companySize: string;
-  primaryRequirement: string;
-  deploymentTimeline: string;
-  environmentDetails: string;
-}
-
-export interface ContactApiResponse {
-  success: boolean;
-  message?: string;
-  error?: string;
+  companySize: '1 to 10' | '11 to 50' | '51 or more';
+  rfpTypes: RfpType[];
+  proposalsPerYear: '1 to 5' | '6 to 15' | '16 or more';
+  interest: InterestOption;
+  notes: string;
 }
