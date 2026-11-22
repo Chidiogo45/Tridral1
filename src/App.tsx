@@ -5,98 +5,70 @@ import { Navbar } from './components/Navbar.tsx';
 import { Footer } from './components/Footer.tsx';
 
 import { HomePage } from './pages/HomePage.tsx';
-import { ProductPage } from './pages/ProductPage.tsx';
-import { SampleReportPage } from './pages/SampleReportPage.tsx';
-import { WhyItMattersPage } from './pages/WhyItMattersPage.tsx';
-import { PricingPage } from './pages/PricingPage.tsx';
-import { RoadmapPage } from './pages/RoadmapPage.tsx';
+import { ProductsPage } from './pages/ProductsPage.tsx';
+import { SolutionsPage } from './pages/SolutionsPage.tsx';
+import { TechnologyPage } from './pages/TechnologyPage.tsx';
 import { AboutPage } from './pages/AboutPage.tsx';
-import { FaqPage } from './pages/FaqPage.tsx';
-import { TrustCenterPage } from './pages/TrustCenterPage.tsx';
-import { EarlyAccessPage } from './pages/EarlyAccessPage.tsx';
+import { ContactPage } from './pages/ContactPage.tsx';
+import { PrivacyPolicyPage, TermsOfUsePage } from './pages/LegalPages.tsx';
 
 const PAGE_META: Record<PageId, { title: string; description: string }> = {
   home: {
-    title: 'Tridral | Check your proposal against the RFP',
+    title: 'Tridral | Intelligent Technology & Arlinex RFP Compliance',
     description:
-      'It lists every requirement in the RFP and shows which ones your draft covers, partly covers, or misses, with the page for each.',
+      'Tridral is a technology company developing intelligent business solutions, including Arlinex, an AI-powered RFP compliance platform for small government contractors.',
   },
-  product: {
-    title: 'Product | Tridral',
-    description: 'A walkthrough of what the product does, step by step.',
+  products: {
+    title: 'Products — Arlinex | Tridral',
+    description:
+      'Explore Arlinex, Tridral’s featured product in development for analyzing government RFP requirements and identifying proposal compliance gaps.',
   },
-  'sample-report': {
-    title: 'Sample report | Tridral',
-    description: 'An example of a check, on made-up data.',
+  solutions: {
+    title: 'Solutions | Tridral',
+    description:
+      'Learn how Tridral addresses manual RFP compliance challenges faced by small government contractors through the intended Arlinex workflow.',
   },
-  'why-it-matters': {
-    title: 'Why it matters | Tridral',
-    description: 'Real cases and the size of the market, from public sources.',
-  },
-  pricing: {
-    title: 'Pricing | Tridral',
-    description: 'How Tridral is planned to make money.',
-  },
-  roadmap: {
-    title: 'Roadmap | Tridral',
-    description: "What we're building. Nothing here is available yet.",
+  technology: {
+    title: 'Technology | Tridral',
+    description:
+      'Review Tridral’s planned Microsoft Azure architecture across Document Intelligence, Azure OpenAI, Blob Storage, and cloud infrastructure.',
   },
   about: {
     title: 'About | Tridral',
-    description: "Why it exists and who it's for.",
-  },
-  faq: {
-    title: 'FAQ | Tridral',
-    description: 'Not yet. The product is in development.',
-  },
-  'trust-center': {
-    title: 'Trust Center | Tridral',
     description:
-      "Tridral is in development. This page describes how we're designing the product and what this website collects. We'll update it before launch.",
+      'Tridral’s mission, vision, and long-term direction in building practical intelligent technology for complex business operations.',
   },
-  'early-access': {
-    title: 'Join early access | Tridral',
+  contact: {
+    title: 'Contact | Tridral',
     description:
-      "Tell us which RFPs you respond to and how many proposals your team submits each year. We'll reach out as early access spots open.",
+      'Connect with Tridral regarding technology partnerships, investor relations, and Arlinex opportunities.',
+  },
+  privacy: {
+    title: 'Privacy Policy | Tridral',
+    description: 'Privacy Policy for the Tridral public company website.',
+  },
+  terms: {
+    title: 'Terms of Use | Tridral',
+    description: 'Terms of Use for the Tridral public company website.',
   },
 };
 
 export default function App() {
-  const initial = resolveRouteFromLocation(
-    window.location.pathname,
-    window.location.hash,
-    window.location.search
-  );
-
+  const initial = resolveRouteFromLocation(window.location.pathname, window.location.hash);
   const [currentPage, setCurrentPage] = useState<PageId>(initial.page);
-  const [walkthroughPreselected, setWalkthroughPreselected] = useState<boolean>(
-    initial.walkthroughIntent
-  );
 
-  // Clean up redirected legacy URLs (/platform, /how-it-works, /capabilities, etc.)
   useEffect(() => {
     if (initial.redirectedFrom) {
-      const targetUrl =
-        PAGE_PATHS[initial.page] +
-        (initial.walkthroughIntent ? '?intent=walkthrough' : '');
-      window.history.replaceState({ page: initial.page }, '', targetUrl);
+      window.history.replaceState({ page: initial.page }, '', PAGE_PATHS[initial.page]);
     }
   }, []);
 
   useEffect(() => {
     const handlePopState = () => {
-      const resolved = resolveRouteFromLocation(
-        window.location.pathname,
-        window.location.hash,
-        window.location.search
-      );
+      const resolved = resolveRouteFromLocation(window.location.pathname, window.location.hash);
       setCurrentPage(resolved.page);
-      setWalkthroughPreselected(resolved.walkthroughIntent);
       if (resolved.redirectedFrom) {
-        const targetUrl =
-          PAGE_PATHS[resolved.page] +
-          (resolved.walkthroughIntent ? '?intent=walkthrough' : '');
-        window.history.replaceState({ page: resolved.page }, '', targetUrl);
+        window.history.replaceState({ page: resolved.page }, '', PAGE_PATHS[resolved.page]);
       }
     };
     window.addEventListener('popstate', handlePopState);
@@ -121,17 +93,12 @@ export default function App() {
     if (ogDesc) ogDesc.setAttribute('content', meta.description);
   }, [currentPage]);
 
-  const handleNavigate = (page: PageId, options?: { walkthrough?: boolean }) => {
-    const isWalkthrough = Boolean(options?.walkthrough);
+  const handleNavigate = (page: PageId) => {
     setCurrentPage(page);
-    setWalkthroughPreselected(page === 'early-access' && isWalkthrough);
+    const targetUrl = PAGE_PATHS[page] || '/';
 
-    const basePath = PAGE_PATHS[page] || '/';
-    const targetUrl =
-      page === 'early-access' && isWalkthrough ? `${basePath}?intent=walkthrough` : basePath;
-
-    if (window.location.pathname + window.location.search !== targetUrl || window.location.hash) {
-      window.history.pushState({ page, walkthrough: isWalkthrough }, '', targetUrl);
+    if (window.location.pathname !== targetUrl || window.location.hash || window.location.search) {
+      window.history.pushState({ page }, '', targetUrl);
     }
 
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -142,36 +109,27 @@ export default function App() {
     switch (currentPage) {
       case 'home':
         return <HomePage onNavigate={handleNavigate} />;
-      case 'product':
-        return <ProductPage onNavigate={handleNavigate} />;
-      case 'sample-report':
-        return <SampleReportPage onNavigate={handleNavigate} />;
-      case 'why-it-matters':
-        return <WhyItMattersPage onNavigate={handleNavigate} />;
-      case 'pricing':
-        return <PricingPage onNavigate={handleNavigate} />;
-      case 'roadmap':
-        return <RoadmapPage onNavigate={handleNavigate} />;
+      case 'products':
+        return <ProductsPage onNavigate={handleNavigate} />;
+      case 'solutions':
+        return <SolutionsPage onNavigate={handleNavigate} />;
+      case 'technology':
+        return <TechnologyPage onNavigate={handleNavigate} />;
       case 'about':
         return <AboutPage onNavigate={handleNavigate} />;
-      case 'faq':
-        return <FaqPage onNavigate={handleNavigate} />;
-      case 'trust-center':
-        return <TrustCenterPage onNavigate={handleNavigate} />;
-      case 'early-access':
-        return (
-          <EarlyAccessPage
-            onNavigate={handleNavigate}
-            preselectWalkthrough={walkthroughPreselected}
-          />
-        );
+      case 'contact':
+        return <ContactPage />;
+      case 'privacy':
+        return <PrivacyPolicyPage />;
+      case 'terms':
+        return <TermsOfUsePage />;
       default:
         return <HomePage onNavigate={handleNavigate} />;
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col tridral-canvas-gradient text-[var(--text)]">
+    <div className="min-h-screen flex flex-col bg-white text-[#172337]">
       <Navbar currentPage={currentPage} onNavigate={handleNavigate} />
       <main key={currentPage} className="flex-1 w-full animate-page-enter">
         {renderPage()}

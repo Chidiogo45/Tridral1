@@ -5,18 +5,15 @@ interface LogoProps {
   size?: number;
   showWordmark?: boolean;
   variant?: 'light' | 'dark';
-  wordmarkClass?: string;
 }
 
 export const Logo: React.FC<LogoProps> = ({
   className = '',
-  size = 32,
+  size = 30,
   showWordmark = true,
   variant = 'light',
-  wordmarkClass,
 }) => {
-  const defaultWordmarkColor =
-    variant === 'dark' ? 'text-white' : 'text-[var(--ink)]';
+  const isDarkBg = variant === 'dark';
 
   return (
     <span className={`inline-flex items-center gap-2.5 shrink-0 ${className}`}>
@@ -29,36 +26,29 @@ export const Logo: React.FC<LogoProps> = ({
         className="shrink-0"
         aria-hidden="true"
       >
-        <rect width="32" height="32" rx="9" fill="#1A56F0" />
-        <path d="M9 6.5H18.5L23.5 11.5V25.5H9V6.5Z" fill="#FFFFFF" />
-        <path d="M18.5 6.5V11.5H23.5L18.5 6.5Z" fill="#CFE0FF" />
-        <path
-          d="M12 14H20"
-          stroke="#2DD4BF"
-          strokeWidth="2"
-          strokeLinecap="round"
+        <rect
+          width="32"
+          height="32"
+          rx="7"
+          fill={isDarkBg ? '#16243A' : '#101B2C'}
+          stroke={isDarkBg ? 'rgba(255,255,255,0.16)' : 'rgba(16,27,44,0.12)'}
+          strokeWidth="1"
         />
         <path
-          d="M12 18H19"
-          stroke="#0B1020"
-          strokeWidth="1.8"
-          strokeLinecap="round"
+          d="M7.5 8.5H24.5V12.2H18V24.5H14V12.2H7.5V8.5Z"
+          fill="#FFFFFF"
         />
-        <path
-          d="M12 22H17"
-          stroke="#4A5368"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
+        <rect x="20.5" y="19.5" width="4" height="5" rx="1" fill="#3979F6" />
+        <rect x="7.5" y="19.5" width="4" height="5" rx="1" fill="#18B8A6" />
       </svg>
+
       {showWordmark && (
         <span
-          className={
-            wordmarkClass ??
-            `display-heading text-xl font-extrabold tracking-tight ${defaultWordmarkColor}`
-          }
+          className={`display-heading text-[18px] font-extrabold tracking-[0.06em] leading-none ${
+            isDarkBg ? 'text-white' : 'text-[#101B2C]'
+          }`}
         >
-          Tridral
+          TRIDRAL
         </span>
       )}
     </span>

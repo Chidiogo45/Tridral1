@@ -1,18 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageId } from '../types.ts';
 import { PAGE_PATHS } from '../routes.ts';
 import { Logo } from './Logo.tsx';
-import { ArrowRightIcon, ChevronDownIcon, CloseIcon, MenuIcon } from './Icons.tsx';
+import { CloseIcon, MenuIcon } from './Icons.tsx';
 
 interface NavbarProps {
   currentPage: PageId;
-  onNavigate: (page: PageId, options?: { walkthrough?: boolean }) => void;
+  onNavigate: (page: PageId) => void;
 }
+
+const NAV_ITEMS: { id: PageId; label: string }[] = [
+  { id: 'home', label: 'Home' },
+  { id: 'products', label: 'Products' },
+  { id: 'solutions', label: 'Solutions' },
+  { id: 'technology', label: 'Technology' },
+  { id: 'about', label: 'About' },
+  { id: 'contact', label: 'Contact' },
+];
 
 export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
-  const moreRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -26,68 +33,41 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   }, [mobileMenuOpen]);
 
   useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (moreRef.current && !moreRef.current.contains(event.target as Node)) {
-        setMoreOpen(false);
-      }
-    };
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setMoreOpen(false);
         setMobileMenuOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleOutsideClick);
     document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
-
-  const primaryNav: { id: PageId; label: string }[] = [
-    { id: 'product', label: 'Product' },
-    { id: 'sample-report', label: 'Sample report' },
-    { id: 'why-it-matters', label: 'Why it matters' },
-    { id: 'pricing', label: 'Pricing' },
-    { id: 'about', label: 'About' },
-  ];
-
-  const moreNav: { id: PageId; label: string }[] = [
-    { id: 'roadmap', label: 'Roadmap' },
-    { id: 'faq', label: 'FAQ' },
-    { id: 'trust-center', label: 'Trust Center' },
-  ];
-
-  const isMoreActive = moreNav.some((item) => item.id === currentPage);
 
   const handleNav = (page: PageId, e?: React.MouseEvent) => {
     if (e) e.preventDefault();
     onNavigate(page);
-    setMoreOpen(false);
     setMobileMenuOpen(false);
   };
 
   return (
-    <header className="fixed top-4 inset-x-0 z-50 px-4 sm:px-6 pointer-events-none">
-      <div className="max-w-[1200px] mx-auto pointer-events-auto">
-        <div
-          className="flex items-center justify-between gap-4 lg:gap-6 px-4 sm:px-5 h-16 rounded-full bg-white/92 backdrop-blur-md border border-[#E2E8F8]"
-          style={{ boxShadow: 'var(--shadow-card)' }}
-        >
-          {/* Brand */}
+    <header className="sticky top-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0]">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="h-16 flex items-center justify-between gap-8">
+          {/* Zone 1: Brand wordmark + geometric T */}
           <a
             href={PAGE_PATHS.home}
             onClick={(e) => handleNav('home', e)}
-            className="flex items-center focus-ring rounded-full py-1 px-1 cursor-pointer shrink-0"
+            className="inline-flex items-center py-1 focus-ring rounded-md whitespace-nowrap shrink-0 cursor-pointer"
             aria-label="Tridral Home"
           >
-            <Logo size={30} />
+            <Logo size={28} variant="light" />
           </a>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1" aria-label="Primary navigation">
-            {primaryNav.map((item) => {
+          {/* Zone 2: Horizontal Desktop Navigation */}
+          <nav
+            className="hidden lg:flex items-center gap-7"
+            aria-label="Primary navigation"
+          >
+            {NAV_ITEMS.map((item) => {
               const isActive = currentPage === item.id;
               return (
                 <a
@@ -95,91 +75,38 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
                   href={PAGE_PATHS[item.id]}
                   onClick={(e) => handleNav(item.id, e)}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`px-3 py-2 rounded-full text-[14px] font-medium whitespace-nowrap shrink-0 transition-colors duration-200 cursor-pointer focus-ring ${
+                  className={`relative py-2 text-[14px] font-medium whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer focus-ring rounded-sm ${
                     isActive
-                      ? 'bg-[var(--blue-soft)] text-[var(--blue)] font-semibold'
-                      : 'text-[var(--text)] hover:text-[var(--ink)] hover:bg-[#F4F6FF]'
+                      ? 'text-[#101B2C] font-semibold'
+                      : 'text-[#64748B] hover:text-[#101B2C]'
                   }`}
                 >
                   {item.label}
+                  {isActive && (
+                    <span
+                      className="absolute inset-x-0 -bottom-[1px] h-[2px] bg-[#3979F6] rounded-full"
+                      aria-hidden="true"
+                    />
+                  )}
                 </a>
               );
             })}
-
-            <div className="relative" ref={moreRef}>
-              <button
-                type="button"
-                onClick={() => setMoreOpen((prev) => !prev)}
-                aria-expanded={moreOpen}
-                aria-haspopup="menu"
-                className={`inline-flex items-center gap-1 px-3 py-2 rounded-full text-[14px] font-medium whitespace-nowrap shrink-0 transition-colors duration-200 cursor-pointer focus-ring ${
-                  isMoreActive || moreOpen
-                    ? 'bg-[var(--blue-soft)] text-[var(--blue)] font-semibold'
-                    : 'text-[var(--text)] hover:text-[var(--ink)] hover:bg-[#F4F6FF]'
-                }`}
-              >
-                <span>More</span>
-                <ChevronDownIcon
-                  className={`w-4 h-4 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
-                />
-              </button>
-
-              {moreOpen && (
-                <div
-                  role="menu"
-                  aria-label="More pages"
-                  className="absolute left-0 mt-3 w-48 rounded-2xl bg-white border border-[#E2E8F8] p-2 z-50"
-                  style={{ boxShadow: 'var(--shadow-card)' }}
-                >
-                  {moreNav.map((item) => {
-                    const active = currentPage === item.id;
-                    return (
-                      <a
-                        key={item.id}
-                        role="menuitem"
-                        href={PAGE_PATHS[item.id]}
-                        onClick={(e) => handleNav(item.id, e)}
-                        aria-current={active ? 'page' : undefined}
-                        className={`block w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors focus-ring ${
-                          active
-                            ? 'bg-[var(--blue-soft)] text-[var(--blue)] font-semibold'
-                            : 'text-[var(--ink)] hover:bg-[#F4F6FF]'
-                        }`}
-                      >
-                        {item.label}
-                      </a>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
           </nav>
 
-          {/* Primary Action */}
-          <div className="hidden lg:flex items-center shrink-0">
+          {/* Zone 3: Prominent Contact Us action + Mobile toggle */}
+          <div className="flex items-center gap-3 shrink-0">
             <a
-              href={PAGE_PATHS['early-access']}
-              onClick={(e) => handleNav('early-access', e)}
-              className="group inline-flex items-center justify-center gap-2 h-11 px-5 text-sm font-semibold text-white bg-[var(--blue)] hover:bg-[#1447D4] rounded-full transition-colors duration-200 cursor-pointer focus-ring whitespace-nowrap shrink-0"
+              href={PAGE_PATHS.contact}
+              onClick={(e) => handleNav('contact', e)}
+              className="hidden sm:inline-flex items-center justify-center h-10 px-5 text-[14px] font-semibold text-white bg-[#3979F6] hover:bg-[#2563EB] rounded-lg transition-colors duration-150 whitespace-nowrap shrink-0 focus-ring cursor-pointer"
             >
-              <span>Join early access</span>
-              <ArrowRightIcon className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+              Contact Us
             </a>
-          </div>
 
-          {/* Mobile Controls */}
-          <div className="flex lg:hidden items-center gap-2 shrink-0">
-            <a
-              href={PAGE_PATHS['early-access']}
-              onClick={(e) => handleNav('early-access', e)}
-              className="inline-flex items-center h-9 px-3.5 text-xs font-semibold text-white bg-[var(--blue)] hover:bg-[#1447D4] rounded-full transition-colors whitespace-nowrap shrink-0 focus-ring"
-            >
-              Join early access
-            </a>
             <button
               type="button"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="w-10 h-10 inline-flex items-center justify-center text-[var(--ink)] hover:bg-[var(--blue-soft)] rounded-full transition-colors focus-ring cursor-pointer"
+              className="lg:hidden w-11 h-11 inline-flex items-center justify-center text-[#101B2C] hover:bg-[#F4F6FA] rounded-lg border border-[#E2E8F0] transition-colors focus-ring cursor-pointer"
               aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileMenuOpen}
             >
@@ -189,9 +116,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
         </div>
       </div>
 
-      {/* Mobile Sheet */}
+      {/* Mobile Navigation Drawer */}
       <div
-        className={`lg:hidden fixed inset-0 top-[88px] z-40 px-4 transition-all duration-250 ease-out ${
+        className={`lg:hidden fixed inset-0 top-16 z-40 transition-opacity duration-200 ${
           mobileMenuOpen
             ? 'opacity-100 pointer-events-auto'
             : 'opacity-0 pointer-events-none'
@@ -199,28 +126,29 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
         aria-hidden={!mobileMenuOpen}
       >
         <div
-          className="fixed inset-0 top-[88px] bg-[#0B1020]/30 backdrop-blur-xs"
+          className="fixed inset-0 top-16 bg-[#101B2C]/40 backdrop-blur-[2px]"
           onClick={() => setMobileMenuOpen(false)}
         />
 
-        <div
-          className={`relative max-w-[1200px] mx-auto bg-white rounded-[28px] border border-[#E2E8F8] p-6 max-h-[calc(100vh-112px)] overflow-y-auto transition-transform duration-250 ease-out ${
-            mobileMenuOpen ? 'translate-y-0' : '-translate-y-3'
+        <nav
+          aria-label="Mobile navigation"
+          className={`relative bg-white border-b border-[#E2E8F0] px-4 py-5 shadow-xl transition-transform duration-200 ease-out max-h-[calc(100vh-4rem)] overflow-y-auto ${
+            mobileMenuOpen ? 'translate-y-0' : '-translate-y-4'
           }`}
-          style={{ boxShadow: 'var(--shadow-card)' }}
         >
-          <div className="space-y-1.5">
-            {primaryNav.map((item) => {
+          <div className="space-y-1">
+            {NAV_ITEMS.map((item) => {
               const isActive = currentPage === item.id;
               return (
                 <a
                   key={item.id}
                   href={PAGE_PATHS[item.id]}
                   onClick={(e) => handleNav(item.id, e)}
-                  className={`w-full text-left px-4 py-3 rounded-2xl text-base font-medium flex items-center justify-between transition-colors focus-ring ${
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`flex items-center justify-between min-h-[44px] px-4 py-2.5 rounded-lg text-[15px] font-medium transition-colors focus-ring ${
                     isActive
-                      ? 'bg-[var(--blue-soft)] text-[var(--blue)] font-semibold'
-                      : 'text-[var(--ink)] hover:bg-[#F4F6FF]'
+                      ? 'bg-[#EAF1FF] text-[#3979F6] font-semibold'
+                      : 'text-[#172337] hover:bg-[#F4F6FA]'
                   }`}
                 >
                   <span>{item.label}</span>
@@ -229,40 +157,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             })}
           </div>
 
-          <div className="mt-5 pt-4 border-t border-[#E8ECF8] space-y-1">
-            <div className="px-4 py-1 text-xs font-semibold text-[var(--muted)]">
-              More
-            </div>
-            {moreNav.map((item) => {
-              const isActive = currentPage === item.id;
-              return (
-                <a
-                  key={item.id}
-                  href={PAGE_PATHS[item.id]}
-                  onClick={(e) => handleNav(item.id, e)}
-                  className={`block w-full text-left px-4 py-2.5 rounded-2xl text-sm transition-colors focus-ring ${
-                    isActive
-                      ? 'text-[var(--blue)] font-semibold bg-[var(--blue-soft)]'
-                      : 'text-[var(--text)] hover:bg-[#F4F6FF] hover:text-[var(--ink)]'
-                  }`}
-                >
-                  {item.label}
-                </a>
-              );
-            })}
-          </div>
-
-          <div className="mt-6">
+          <div className="mt-4 pt-4 border-t border-[#E2E8F0]">
             <a
-              href={PAGE_PATHS['early-access']}
-              onClick={(e) => handleNav('early-access', e)}
-              className="group w-full h-12 inline-flex items-center justify-center gap-2 px-6 text-sm font-semibold text-white bg-[var(--blue)] hover:bg-[#1447D4] rounded-full transition-colors focus-ring"
+              href={PAGE_PATHS.contact}
+              onClick={(e) => handleNav('contact', e)}
+              className="w-full min-h-[44px] inline-flex items-center justify-center px-5 py-2.5 text-[15px] font-semibold text-white bg-[#3979F6] hover:bg-[#2563EB] rounded-lg transition-colors focus-ring"
             >
-              <span>Join early access</span>
-              <ArrowRightIcon className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+              Contact Us
             </a>
           </div>
-        </div>
+        </nav>
       </div>
     </header>
   );

@@ -1,38 +1,45 @@
 export type PageId =
   | 'home'
-  | 'product'
-  | 'sample-report'
-  | 'why-it-matters'
-  | 'pricing'
-  | 'roadmap'
+  | 'products'
+  | 'solutions'
+  | 'technology'
   | 'about'
-  | 'faq'
-  | 'trust-center'
-  | 'early-access';
+  | 'contact'
+  | 'privacy'
+  | 'terms';
 
 export type ComplianceStatus = 'Addressed' | 'Partial' | 'Missing';
 
-export interface SampleRequirementRow {
+export interface ArlinexRequirementItem {
   id: string;
-  requirement: string;
-  type: 'Deliverable' | 'Format' | 'Form' | 'Evaluation' | 'Technical';
-  mandatory: 'Yes' | 'No';
-  rfpPage: string;
+  section: string;
+  title: string;
+  category: 'Technical' | 'Compliance' | 'Format' | 'Forms';
+  mandatory: boolean;
+  rfpReference: string;
+  proposalReference: string;
   status: ComplianceStatus;
-  reference: string;
-  evidenceDetail?: string;
+  evidenceQuote: string;
+  assessmentNote: string;
 }
 
-export type RfpType = 'Federal' | 'State' | 'Local';
-export type InterestOption = 'Early access' | 'A walkthrough call' | 'Both';
+export interface ArlinexDocumentItem {
+  name: string;
+  role: 'Solicitation (RFP)' | 'Draft Proposal' | 'Attachment';
+  pages: number;
+  status: 'Parsed (Illustrative)' | 'Pending Review';
+}
 
-export interface EarlyAccessFormData {
-  fullName: string;
-  workEmail: string;
-  companyName: string;
-  companySize: '1 to 10' | '11 to 50' | '51 or more';
-  rfpTypes: RfpType[];
-  proposalsPerYear: '1 to 5' | '6 to 15' | '16 or more';
-  interest: InterestOption;
-  notes: string;
+export type InquiryType =
+  | 'Partnership & Technology'
+  | 'Investor Relations'
+  | 'Arlinex Product Inquiry'
+  | 'General Inquiry';
+
+export interface ContactFormData {
+  name: string;
+  email: string;
+  organization: string;
+  inquiryType: InquiryType;
+  message: string;
 }

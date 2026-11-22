@@ -2,29 +2,22 @@
 
 @layer base {
   :root {
-    --blue-deep: #0A3FD1;
-    --blue: #1A56F0;
-    --blue-soft: #E8EEFF;
-    --ink: #0B1020;
-    --text: #4A5368;
-    --muted: #7B8498;
-    --surface: #FFFFFF;
-    --bg: #F4F6FF;
-    --mint: #2DD4BF;
-    --lilac: #E6DDFB;
-    --sky: #CDEBFA;
-    --mint-tint: #CFF1E1;
+    --navy: #101B2C;
+    --navy-elevated: #16243A;
+    --navy-deep: #0B1320;
+    --blue: #3979F6;
+    --blue-hover: #2563EB;
+    --cloud: #F4F6FA;
+    --teal: #18B8A6;
+    --text-main: #172337;
+    --text-secondary: #64748B;
+    --border: #E2E8F0;
+    --soft-blue: #EAF1FF;
 
-    --status-addressed-bg: #D7F5E5;
-    --status-addressed-text: #0B7A4B;
-    --status-partial-bg: #FFF0CC;
-    --status-partial-text: #8A5A00;
-    --status-missing-bg: #FFE0DC;
-    --status-missing-text: #B42318;
-
-    --shadow-card: 0 12px 40px rgba(15, 30, 90, 0.08);
-    --shadow-hero: 0 24px 64px rgba(6, 20, 74, 0.28);
-    --ease-fluid: cubic-bezier(0.22, 1, 0.36, 1);
+    --shadow-card: 0 4px 20px rgba(16, 27, 44, 0.05);
+    --shadow-elevated: 0 18px 48px rgba(16, 27, 44, 0.14);
+    --shadow-dashboard: 0 24px 64px rgba(8, 15, 28, 0.42);
+    --ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   html {
@@ -33,17 +26,16 @@
 
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 17px;
-    line-height: 1.6;
-    background-color: var(--bg);
-    color: var(--text);
+    font-size: 16px;
+    line-height: 1.65;
+    background-color: #FFFFFF;
+    color: var(--text-main);
     overflow-x: hidden;
   }
 
-  h1, h2, h3, .display-heading {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    letter-spacing: -0.02em;
-    line-height: 1.05;
+  h1, h2, h3, h4, .display-heading {
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.025em;
     text-wrap: balance;
   }
 
@@ -52,117 +44,45 @@
     font-variant-numeric: tabular-nums;
   }
 
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
   ::selection {
-    background-color: rgba(26, 86, 240, 0.16);
-    color: var(--ink);
+    background-color: rgba(57, 121, 246, 0.18);
+    color: var(--navy);
   }
 }
 
-/* Cool lavender-white canvas gradient */
-.tridral-canvas-gradient {
-  background:
-    radial-gradient(1100px 620px at 82% 4%, rgba(230, 221, 251, 0.45), transparent 65%),
-    radial-gradient(880px 560px at 12% 24%, rgba(205, 235, 250, 0.42), transparent 60%),
-    linear-gradient(180deg, #F4F6FF 0%, #FFFFFF 50%, #F4F6FF 100%);
-}
-
-/* Lavender gradient for early access / booking card backdrop */
-.tridral-lavender-backdrop {
-  background:
-    radial-gradient(900px 520px at 20% 10%, rgba(230, 221, 251, 0.65), transparent 65%),
-    radial-gradient(800px 500px at 85% 90%, rgba(205, 235, 250, 0.5), transparent 60%),
-    linear-gradient(180deg, var(--bg) 0%, #FFFFFF 100%);
-}
-
-/* Deep-blue hero & closing band grid texture (very faint thin lines) */
-.hero-grid-lines {
+/* Subtle architectural grid for dark navy technology & hero bands */
+.navy-grid-surface {
+  background-color: var(--navy);
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.065) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.065) 1px, transparent 1px);
-  background-size: 48px 48px;
+    radial-gradient(900px 520px at 78% 18%, rgba(57, 121, 246, 0.18), transparent 65%),
+    radial-gradient(640px 420px at 14% 88%, rgba(24, 184, 166, 0.08), transparent 60%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: auto, auto, 56px 56px, 56px 56px;
 }
 
-/* Surface shadows and interactive lift */
-.card-soft-shadow {
-  box-shadow: var(--shadow-card);
+.navy-cta-surface {
+  background:
+    radial-gradient(840px 440px at 85% 20%, rgba(57, 121, 246, 0.22), transparent 65%),
+    linear-gradient(180deg, #101B2C 0%, #0D1726 100%);
 }
 
-.card-hero-shadow {
-  box-shadow: var(--shadow-hero);
+/* Refined interactive card transition */
+.enterprise-card {
+  transition: transform 180ms var(--ease-fluid), border-color 180ms var(--ease-fluid), box-shadow 180ms var(--ease-fluid);
 }
 
-.card-lift {
-  transition: transform 220ms var(--ease-fluid), box-shadow 220ms var(--ease-fluid);
+.enterprise-card:hover {
+  transform: translateY(-2px);
+  border-color: #CBD5E1;
+  box-shadow: 0 12px 32px rgba(16, 27, 44, 0.08);
 }
 
-.card-lift:hover {
-  transform: translateY(-4px);
-}
-
-/* Hero card perspective & gentle drifting status chips */
-.hero-card-perspective {
-  perspective: 1400px;
-}
-
-@media (min-width: 1024px) {
-  .hero-card-tilted {
-    transform: rotateY(-4deg) rotateX(2deg) rotate(-2deg);
-    transition: transform 350ms var(--ease-fluid);
-  }
-  .hero-card-tilted:hover {
-    transform: rotateY(-1.5deg) rotateX(1deg) rotate(-0.75deg);
-  }
-}
-
-@keyframes chipDriftA {
-  0%, 100% {
-    transform: translateY(0px) translateX(0px);
-  }
-  50% {
-    transform: translateY(-8px) translateX(3px);
-  }
-}
-
-@keyframes chipDriftB {
-  0%, 100% {
-    transform: translateY(0px) translateX(0px);
-  }
-  50% {
-    transform: translateY(7px) translateX(-4px);
-  }
-}
-
-.animate-chip-drift-a {
-  animation: chipDriftA 6.5s ease-in-out infinite;
-}
-
-.animate-chip-drift-b {
-  animation: chipDriftB 7.8s ease-in-out infinite;
-}
-
-/* Fluid eased animations */
-@keyframes rowSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes chipPopIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
+/* Page & entrance motion */
 @keyframes pageFadeIn {
   from {
     opacity: 0;
@@ -174,39 +94,19 @@
   }
 }
 
-.animate-row-slide {
-  animation: rowSlideIn 340ms var(--ease-fluid) both;
-}
-
-.animate-chip-pop {
-  animation: chipPopIn 240ms var(--ease-fluid) both;
-}
-
 .animate-page-enter {
-  animation: pageFadeIn 280ms var(--ease-fluid) both;
+  animation: pageFadeIn 240ms var(--ease-fluid) both;
 }
 
-/* Scroll reveal utility */
 .reveal-item {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 420ms var(--ease-fluid), transform 420ms var(--ease-fluid);
+  transform: translateY(14px);
+  transition: opacity 380ms var(--ease-fluid), transform 380ms var(--ease-fluid);
 }
 
 .reveal-item.is-visible {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* Horizontal step connector line scroll animation */
-.step-connector-line {
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 900ms var(--ease-fluid);
-}
-
-.is-visible .step-connector-line {
-  transform: scaleX(1);
 }
 
 /* Accessible keyboard focus ring */
@@ -219,7 +119,7 @@
   outline-offset: 2px;
 }
 
-/* Respect prefers-reduced-motion everywhere */
+/* Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -235,14 +135,6 @@
 
   .reveal-item {
     opacity: 1 !important;
-    transform: none !important;
-  }
-
-  .step-connector-line {
-    transform: scaleX(1) !important;
-  }
-
-  .hero-card-tilted {
     transform: none !important;
   }
 }
